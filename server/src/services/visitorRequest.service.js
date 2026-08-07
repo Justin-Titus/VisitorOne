@@ -160,42 +160,41 @@ const getVisitRequests = async (filters, user, page = 1, limit = 10) => {
      query.status = { $nin: [VISIT_STATUS.CANCELLED, VISIT_STATUS.REJECTED] };
   }
 
-  let visitorMatch = {};
   if (filters.visitorName) {
-    visitorMatch.name = { $regex: filters.visitorName, $options: 'i' };
+    const matchingVisitors = await Visitor.find({
+      name: { $regex: filters.visitorName, $options: 'i' },
+    }).select('_id');
+    query.visitor = { $in: matchingVisitors.map((v) => v._id) };
   }
 
-  let employeeMatch = {};
   if (filters.employeeName) {
-    employeeMatch.name = { $regex: filters.employeeName, $options: 'i' };
+    const matchingEmployees = await Employee.find({
+      name: { $regex: filters.employeeName, $options: 'i' },
+    }).select('_id');
+    query.employeeToVisit = { $in: matchingEmployees.map((e) => e._id) };
   }
   
   const skip = (page - 1) * limit;
 
-  const data = await VisitRequest.find(query)
-    .populate({
-      path: 'visitor',
-      match: Object.keys(visitorMatch).length > 0 ? visitorMatch : undefined
-    })
-    .populate({
-      path: 'employeeToVisit',
-      match: Object.keys(employeeMatch).length > 0 ? employeeMatch : undefined
-    })
-    .sort({ visitDate: -1, createdAt: -1 });
-    
-  const filteredData = data.filter(doc => doc.visitor != null && doc.employeeToVisit != null);
-
-  const paginatedData = filteredData.slice(skip, skip + limit);
-  const total = filteredData.length;
+  const [data, total] = await Promise.all([
+    VisitRequest.find(query)
+      .populate('visitor')
+      .populate('employeeToVisit')
+      .sort({ visitDate: -1, createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit, 10)),
+    VisitRequest.countDocuments(query),
+  ]);
 
   return {
-    data: paginatedData,
+    data,
     page: parseInt(page, 10),
     limit: parseInt(limit, 10),
     total,
-    totalPages: Math.ceil(total / limit),
+    totalPages: Math.ceil(total / limit) || 1,
   };
 };
+
 
 const getVisitRequestById = async (id, user) => {
   const request = await VisitRequest.findById(id)

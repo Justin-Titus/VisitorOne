@@ -29,6 +29,10 @@ const visitRequestSchema = new mongoose.Schema(
 
 visitRequestSchema.index({ visitor: 1, visitDateString: 1 }, { unique: true });
 visitRequestSchema.index({ employeeToVisit: 1, status: 1 });
-visitRequestSchema.index({ status: 1, visitDate: 1 });
+visitRequestSchema.index({ status: 1, visitDate: -1 });
+visitRequestSchema.index({ visitDate: -1, createdAt: -1 });
+visitRequestSchema.index({ visitDateString: 1, status: 1 });
+visitRequestSchema.index({ employeeToVisit: 1, visitDate: -1 });
 
 module.exports = mongoose.model('VisitRequest', visitRequestSchema);
+
