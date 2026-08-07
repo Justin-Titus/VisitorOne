@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="130 90 275 318" width="100%" height="100%">
+  <defs>
+    <linearGradient id="indigoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#6366F1"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4"/>
+      <stop offset="100%" stop-color="#10B981"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Shield Base -->
+  <path d="M256,98 C214,98 176,112 150,130 C143,135 140,143 140,152 L140,224 C140,308 184,368 256,398 C328,368 372,308 372,224 L372,152 C372,143 369,135 362,130 C336,112 298,98 256,98 Z" fill="url(#indigoGrad)"/>
+
+  <!-- Badge Header Slot -->
+  <rect x="222" y="138" width="68" height="46" rx="10" fill="url(#accentGrad)"/>
+
+  <!-- V Monogram Wing -->
+  <path d="M192,206 L256,318 L320,206" fill="none" stroke="#FFFFFF" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Verified Check Circle -->
+  <circle cx="348" cy="328" r="46" fill="#0C101B" stroke="url(#accentGrad)" stroke-width="9"/>
+  <path d="M326,328 L342,344 L374,308" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

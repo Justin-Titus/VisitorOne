@@ -1,0 +1,34 @@
+const mongoose = require('mongoose');
+const { VISIT_STATUS } = require('../utils/constants');
+
+const visitRequestSchema = new mongoose.Schema(
+  {
+    visitor: { type: mongoose.Schema.Types.ObjectId, ref: 'Visitor', required: true },
+    employeeToVisit: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee', required: true },
+    purpose: { type: String, required: true },
+    visitDate: { type: Date, required: true },
+    visitDateString: { type: String, required: true }, // YYYY-MM-DD
+    expectedArrivalTime: { type: String, required: true }, // HH:mm
+    status: {
+      type: String,
+      enum: Object.values(VISIT_STATUS),
+      default: VISIT_STATUS.PENDING,
+    },
+    remarks: { type: String },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    rejectedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    decidedAt: { type: Date },
+    checkInTime: { type: Date },
+    checkOutTime: { type: Date },
+    cancelledBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    cancelledAt: { type: Date },
+  },
+  { timestamps: true, strict: true }
+);
+
+visitRequestSchema.index({ visitor: 1, visitDateString: 1 }, { unique: true });
+visitRequestSchema.index({ employeeToVisit: 1, status: 1 });
+visitRequestSchema.index({ status: 1, visitDate: 1 });
+
+module.exports = mongoose.model('VisitRequest', visitRequestSchema);
