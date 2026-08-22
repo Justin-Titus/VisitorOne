@@ -11,7 +11,7 @@ Designed with sleek dark-mode aesthetics, responsive glassmorphism interfaces, r
 - **Frontend**: React 19 (Vite), React Router v7, Framer Motion, TailwindCSS v4, Lucide Icons, React Hot Toast
 - **Backend**: Node.js, Express.js, Mongoose ODM
 - **Database**: MongoDB (Local or MongoDB Atlas)
-- **Security & Authentication**: JWT (JSON Web Tokens), Bcrypt.js, Helmet security headers, CORS protection
+- **Security & Authentication**: JWT (JSON Web Tokens), Bcrypt.js, Helmet security headers, CORS protection, `express-mongo-sanitize` (NoSQL Injection Protection), `xss-clean` (XSS Protection), ReDoS Safe Search Escaping
 - **Deployment**: Vercel (Frontend) & Render (Backend REST API)
 
 ---
@@ -196,6 +196,9 @@ After running `npm run seed`, use any of the pre-configured accounts:
 - `PATCH /api/visitor-requests/:id/check-out` — Check out visitor (Receptionist)
 - `PATCH /api/visitor-requests/:id/cancel` — Cancel pass (Admin / Receptionist)
 - `GET /api/visitor-requests/:id/activity` — Get audit trail for specific request
+- `PATCH /api/visitor-requests/bulk-approve` — Bulk approve multiple passes
+- `PATCH /api/visitor-requests/bulk-reject` — Bulk reject multiple passes
+- `PATCH /api/visitor-requests/bulk-check-in` — Bulk check-in multiple visitors
 
 ### Dashboards (`/api/dashboard`)
 - `GET /api/dashboard/admin` — Admin analytics & summary KPIs
@@ -204,6 +207,8 @@ After running `npm run seed`, use any of the pre-configured accounts:
 
 ### Reports & Audit Logs (`/api/reports` & `/api/activity-logs`)
 - `GET /api/reports/visitor-analytics` — Comprehensive report (Supports `range=today`, `range=week`, or custom date filters)
+- `GET /api/reports/export/pdf` — Export analytics as PDF document
+- `GET /api/reports/export/excel` — Export analytics as ExcelJS spreadsheet
 - `GET /api/activity-logs` — Global security audit trail (Admin)
 
 ---
