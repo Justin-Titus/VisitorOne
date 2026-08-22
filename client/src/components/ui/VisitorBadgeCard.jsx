@@ -9,9 +9,8 @@ import {
   XCircle,
   LogIn,
   LogOut,
-  Shield,
+  ShieldCheck,
   Printer,
-  Hash,
   Sparkles,
 } from 'lucide-react';
 
@@ -53,12 +52,8 @@ export default function VisitorBadgeCard({
         <div className="pt-3 pb-2 px-5 bg-slate-50 dark:bg-black/20 border-b border-slate-200/80 dark:border-white/[0.06] relative z-10">
           <div className="lanyard-slot mb-2" title="Lanyard Attachment Slot" />
           <div className="flex items-center justify-between text-[11px] font-mono dark:text-slate-400 text-slate-500">
-            <span className="flex items-center gap-1 font-bold tracking-wider text-indigo-600 dark:text-indigo-400">
-              <Shield size={12} /> VISITOR ACCESS PASS
-            </span>
-            <span className="flex items-center gap-0.5 opacity-80">
-              <Hash size={11} />
-              {passId}
+            <span className="flex items-center gap-1.5 font-bold tracking-wider text-indigo-600 dark:text-indigo-400">
+              <ShieldCheck size={13} className="text-indigo-500" /> SECURITY ACCESS PASS
             </span>
           </div>
         </div>

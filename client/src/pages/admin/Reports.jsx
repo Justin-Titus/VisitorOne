@@ -3,6 +3,7 @@ import AnimatedPage from '../../components/shared/AnimatedPage';
 import Loader from '../../components/ui/Loader';
 import StatCard from '../../components/ui/StatCard';
 import api from '../../services/api';
+import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import {
   FileBarChart,
@@ -12,11 +13,18 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  Download,
-  Building2,
+  FileSpreadsheet,
+  FileType,
+  Printer,
   User,
 } from 'lucide-react';
 import { getTodayString } from '../../utils/helpers';
+import {
+  DailyTrendsChart,
+  PeakHoursChart,
+  StatusDistributionChart,
+  DepartmentChart,
+} from '../../components/ui/AnalyticsCharts';
 
 export default function Reports() {
   const [loading, setLoading] = useState(false);
@@ -43,6 +51,7 @@ export default function Reports() {
       const res = await api.get('/reports/visitor-analytics', { params });
       setData(res.data.data);
     } catch {
+      // error handled by api interceptor
     } finally {
       setLoading(false);
     }
@@ -57,26 +66,76 @@ export default function Reports() {
     fetchReports(preset, filters);
   };
 
+  const handleExport = async (format) => {
+    try {
+      toast.loading(`Generating ${format.toUpperCase()} report...`, { id: 'export-toast' });
+      const params = {};
+      if (activePreset === 'today' || activePreset === 'week') {
+        params.range = activePreset;
+      } else {
+        if (filters.startDate) params.startDate = filters.startDate;
+        if (filters.endDate) params.endDate = filters.endDate;
+      }
+      if (filters.department) params.department = filters.department;
+
+      const response = await api.get(`/reports/export/${format}`, {
+        params,
+        responseType: 'blob',
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute(
+        'download',
+        `VisitorOne_${format.toUpperCase()}_Report_${new Date().toISOString().split('T')[0]}.${
+          format === 'excel' ? 'xlsx' : 'pdf'
+        }`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success(`${format.toUpperCase()} Report Downloaded!`, { id: 'export-toast' });
+    } catch {
+      toast.error(`Failed to export ${format.toUpperCase()} report`, { id: 'export-toast' });
+    }
+  };
+
   return (
     <AnimatedPage className="space-y-5">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-white/[0.06]">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-white/[0.06]">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2.5">
             <FileBarChart className="text-indigo-600 dark:text-indigo-400" size={24} />
-            Security Reports & Analytics
+            Security Reports & Graphical Analytics
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Comprehensive audit reports and visitor traffic throughput analytics
+            Comprehensive audit reports, PDF/Excel downloads, and visitor traffic telemetry
           </p>
         </div>
 
-        <button
-          onClick={() => window.print()}
-          className="btn-secondary text-xs font-semibold self-start sm:self-auto flex items-center gap-1.5"
-        >
-          <Download size={13} /> Export / Print Report
-        </button>
+        {/* Export Buttons */}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => handleExport('pdf')}
+            className="btn-secondary text-xs font-semibold flex items-center gap-1.5 border-indigo-500/30 hover:border-indigo-500 text-indigo-600 dark:text-indigo-400"
+          >
+            <FileType size={14} /> PDF Report
+          </button>
+          <button
+            onClick={() => handleExport('excel')}
+            className="btn-secondary text-xs font-semibold flex items-center gap-1.5 border-emerald-500/30 hover:border-emerald-500 text-emerald-600 dark:text-emerald-400"
+          >
+            <FileSpreadsheet size={14} /> Excel Export
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="btn-cyber text-xs font-semibold flex items-center gap-1.5"
+          >
+            <Printer size={14} /> Print Page
+          </button>
+        </div>
       </div>
 
       {/* Filter Bar */}
@@ -205,47 +264,44 @@ export default function Reports() {
             />
           </div>
 
-          {/* Department Breakdown */}
-          {data.byDepartment && data.byDepartment.length > 0 && (
+          {/* Graphical Charts Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-20px' }}
-              transition={{ duration: 0.3 }}
-              className="bento-card p-5"
+              transition={{ duration: 0.4 }}
             >
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-4 font-mono flex items-center gap-1.5">
-                <Building2 size={14} className="text-indigo-500" /> Department Volume Breakdown
-              </h2>
-              <div className="space-y-3">
-                {data.byDepartment.map((dept, i) => {
-                  const maxCount = Math.max(...data.byDepartment.map((d) => d.count), 1);
-                  const pct = Math.round((dept.count / maxCount) * 100);
-                  return (
-                    <div key={i} className="space-y-1">
-                      <div className="flex items-center justify-between text-xs font-semibold">
-                        <span className="text-slate-800 dark:text-slate-200">
-                          {dept.department || 'Unspecified'}
-                        </span>
-                        <span className="font-mono text-indigo-600 dark:text-indigo-400">
-                          {dept.count} visitors
-                        </span>
-                      </div>
-                      <div className="w-full h-2 rounded-full bg-slate-100 dark:bg-white/[0.05] overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          whileInView={{ width: `${pct}%` }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.7, delay: i * 0.08, ease: 'easeOut' }}
-                          className="h-full bg-indigo-600 rounded-full"
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+              <DailyTrendsChart data={data.dailyTrends || []} />
             </motion.div>
-          )}
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-20px' }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <StatusDistributionChart summary={data.summary || {}} />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-20px' }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
+              <PeakHoursChart data={data.peakHoursBreakdown || []} />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-20px' }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+            >
+              <DepartmentChart data={data.byDepartment || []} />
+            </motion.div>
+          </div>
 
           {/* Host Breakdown + Avg Duration row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -321,4 +377,3 @@ export default function Reports() {
     </AnimatedPage>
   );
 }
-

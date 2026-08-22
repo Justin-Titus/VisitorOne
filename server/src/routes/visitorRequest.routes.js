@@ -13,6 +13,11 @@ router.use(authMiddleware);
 // Global Activity logs (admin only)
 router.get('/activity-logs', authorize(ROLES.ADMIN), controller.getGlobalActivityLogs);
 
+// Bulk Operations
+router.patch('/bulk-approve', authorize(ROLES.EMPLOYEE, ROLES.ADMIN), controller.bulkApprove);
+router.patch('/bulk-reject', authorize(ROLES.EMPLOYEE, ROLES.ADMIN), controller.bulkReject);
+router.patch('/bulk-check-in', authorize(ROLES.RECEPTIONIST, ROLES.ADMIN), controller.bulkCheckIn);
+
 router.post(
   '/',
   authorize(ROLES.RECEPTIONIST),

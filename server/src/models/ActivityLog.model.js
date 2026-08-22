@@ -12,4 +12,7 @@ const activityLogSchema = new mongoose.Schema(
   { timestamps: true, strict: true }
 );
 
+activityLogSchema.index({ visitRequest: 1, timestamp: -1 });
+activityLogSchema.index({ performedBy: 1, timestamp: -1 });
+
 module.exports = mongoose.model('ActivityLog', activityLogSchema);

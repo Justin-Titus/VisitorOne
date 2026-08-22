@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -10,6 +10,7 @@ const transitionConfig = {
 };
 
 export default function AppLayout() {
+  const location = useLocation();
   const [isHovered, setIsHovered] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -29,6 +30,14 @@ export default function AppLayout() {
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
   }, []);
+
+  // Scroll to top on route change
+  useEffect(() => {
+    const mainContainer = document.querySelector('main');
+    if (mainContainer) {
+      mainContainer.scrollTo({ top: 0 });
+    }
+  }, [location.pathname]);
 
   // Keyboard shortcut: Ctrl + B or Cmd + B to toggle pin state (desktop), Escape to close mobile menu
   useEffect(() => {

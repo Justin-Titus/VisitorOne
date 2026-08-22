@@ -10,7 +10,6 @@ import {
   History,
   UserPlus,
   LogOut as LogOutIcon,
-  Shield,
   Pin,
   PinOff,
   X,

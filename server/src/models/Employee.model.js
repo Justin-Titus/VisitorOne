@@ -18,4 +18,7 @@ const employeeSchema = new mongoose.Schema(
   { timestamps: true, strict: true }
 );
 
+employeeSchema.index({ department: 1, status: 1 });
+employeeSchema.index({ name: 'text', department: 'text', designation: 'text', email: 'text' });
+
 module.exports = mongoose.model('Employee', employeeSchema);

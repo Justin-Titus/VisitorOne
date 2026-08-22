@@ -4,7 +4,6 @@ import AnimatedPage from '../../components/shared/AnimatedPage';
 import VisitorBadgeCard from '../../components/ui/VisitorBadgeCard';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { motion } from 'framer-motion';
 import {
   UserPlus,
   User,

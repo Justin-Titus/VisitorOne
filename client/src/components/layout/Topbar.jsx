@@ -3,11 +3,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import useTheme from '../../hooks/useTheme';
 import api from '../../services/api';
-import { formatDateTime, getStatusLabel } from '../../utils/helpers';
-import { Sun, Moon, Bell, Check, Clock, UserCheck, ShieldAlert, ExternalLink, Shield, Menu } from 'lucide-react';
+import { formatDateTime } from '../../utils/helpers';
+import { Sun, Moon, Bell, Check, Clock, UserCheck, ShieldAlert, ExternalLink, Menu } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function Topbar({ mobileOpen, setMobileOpen, isMobile }) {
+export default function Topbar({ mobileOpen, setMobileOpen }) {
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();

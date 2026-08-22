@@ -24,4 +24,6 @@ visitorSchema.pre('save', function (next) {
   next();
 });
 
+visitorSchema.index({ name: 'text', email: 'text', company: 'text', phone: 'text' });
+
 module.exports = mongoose.model('Visitor', visitorSchema);

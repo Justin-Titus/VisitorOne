@@ -18,9 +18,11 @@ import {
   History,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { DailyTrendsChart, StatusDistributionChart } from '../../components/ui/AnalyticsCharts';
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
+  const [analytics, setAnalytics] = useState(null);
   const [recentRequests, setRecentRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedReq, setSelectedReq] = useState(null);
@@ -30,12 +32,14 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [dashRes, reqRes] = await Promise.all([
+      const [dashRes, reqRes, analyticsRes] = await Promise.all([
         api.get('/dashboard/admin'),
         api.get('/visitor-requests', { params: { limit: 3 } }),
+        api.get('/reports/visitor-analytics', { params: { range: 'week' } }),
       ]);
       setStats(dashRes.data.data);
       setRecentRequests(reqRes.data.data.data || []);
+      setAnalytics(analyticsRes.data.data);
     } catch {
       // error handled by api interceptor
     } finally {
@@ -113,6 +117,14 @@ export default function AdminDashboard() {
           subtitle="Active admin & staff accounts"
         />
       </div>
+
+      {/* Graphical Telemetry Row */}
+      {analytics && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <DailyTrendsChart data={analytics.dailyTrends || []} />
+          <StatusDistributionChart summary={analytics.summary || {}} />
+        </div>
+      )}
 
       {/* Quick Navigation Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -215,4 +227,3 @@ export default function AdminDashboard() {
     </AnimatedPage>
   );
 }
-

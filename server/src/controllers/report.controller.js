@@ -13,7 +13,23 @@ const getSummary = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, data, 'Summary report fetched successfully'));
 });
 
+const exportPdf = asyncHandler(async (req, res) => {
+  const pdfBuffer = await reportService.generatePdfReport(req.query);
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename=VisitorOne_Security_Report_${Date.now()}.pdf`);
+  res.send(pdfBuffer);
+});
+
+const exportExcel = asyncHandler(async (req, res) => {
+  const excelBuffer = await reportService.generateExcelReport(req.query);
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader('Content-Disposition', `attachment; filename=VisitorOne_Visitor_Registry_${Date.now()}.xlsx`);
+  res.send(excelBuffer);
+});
+
 module.exports = {
   getVisitorAnalytics,
   getSummary,
+  exportPdf,
+  exportExcel,
 };

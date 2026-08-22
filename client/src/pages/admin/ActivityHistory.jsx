@@ -1,37 +1,49 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import AnimatedPage from '../../components/shared/AnimatedPage';
 import Loader from '../../components/ui/Loader';
 import EmptyState from '../../components/ui/EmptyState';
 import api from '../../services/api';
 import { motion } from 'framer-motion';
-import { History, Search, ChevronLeft, ChevronRight, Clock, Shield } from 'lucide-react';
+import { History, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { formatDateTime, getStatusLabel } from '../../utils/helpers';
 
 export default function ActivityHistory() {
-  const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
-
-  const fetchLogs = useCallback(async (page = 1) => {
-    setLoading(true);
-    try {
-      const res = await api.get('/activity-logs', { params: { page, limit: 15 } });
-      setLogs(res.data.data.data);
-      setPagination({
-        page: res.data.data.page,
-        totalPages: res.data.data.totalPages,
-        total: res.data.data.total,
-      });
-    } catch {
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   useEffect(() => {
-    fetchLogs(1);
-  }, [fetchLogs]);
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1); // Reset to page 1 on new search
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  const { data: responseData, isLoading: loading } = useQuery({
+    queryKey: ['activity-logs', page, debouncedSearch],
+    queryFn: async () => {
+      const res = await api.get('/activity-logs', { params: { page, limit: 15, search: debouncedSearch } });
+      return res.data.data;
+    },
+    placeholderData: keepPreviousData,
+  });
+
+  const logs = responseData?.data || [];
+  const pagination = {
+    page: Number(responseData?.page) || 1,
+    totalPages: Number(responseData?.totalPages) || 1,
+    total: Number(responseData?.total) || 0,
+  };
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    const mainContainer = document.querySelector('main');
+    if (mainContainer) {
+      mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   const actionMap = {
     created: 'text-blue-600 dark:text-blue-400 bg-blue-500/10 border-blue-500/20',
@@ -41,13 +53,6 @@ export default function ActivityHistory() {
     checked_out: 'text-slate-600 dark:text-slate-400 bg-slate-500/10 border-slate-500/20',
     cancelled: 'text-gray-600 dark:text-gray-400 bg-gray-500/10 border-gray-500/20',
   };
-
-  const filteredLogs = logs.filter(
-    (l) =>
-      l.performedBy?.name?.toLowerCase().includes(search.toLowerCase()) ||
-      l.remarks?.toLowerCase().includes(search.toLowerCase()) ||
-      l.action?.toLowerCase().includes(search.toLowerCase())
-  );
 
   return (
     <AnimatedPage className="space-y-5">
@@ -83,12 +88,12 @@ export default function ActivityHistory() {
       {/* Table */}
       {loading ? (
         <Loader text="Loading audit log telemetry..." />
-      ) : filteredLogs.length === 0 ? (
+      ) : logs.length === 0 ? (
         <EmptyState title="No activity records found" />
       ) : (
         <div className="bento-card overflow-hidden">
           {/* Desktop Table */}
-          <div className="hidden md:block overflow-x-auto">
+          <div className="hidden md:block overflow-x-auto overflow-y-hidden">
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-slate-50/80 dark:bg-black/20 border-b border-slate-200 dark:border-white/[0.06]">
@@ -100,7 +105,7 @@ export default function ActivityHistory() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04] text-xs">
-                {filteredLogs.map((log, i) => (
+                {logs.map((log, i) => (
                   <motion.tr
                     key={log._id}
                     initial={{ opacity: 0, y: 10 }}
@@ -132,7 +137,7 @@ export default function ActivityHistory() {
 
           {/* Mobile Card List */}
           <div className="md:hidden divide-y divide-slate-100 dark:divide-white/[0.04]">
-            {filteredLogs.map((log, i) => (
+            {logs.map((log, i) => (
               <motion.div
                 key={log._id}
                 initial={{ opacity: 0, y: 8 }}
@@ -167,26 +172,31 @@ export default function ActivityHistory() {
         </div>
       )}
 
-      {/* Pagination */}
-      {filteredLogs.length > 0 && (
-        <div className="flex items-center justify-between px-2 pt-2 text-xs text-slate-500 dark:text-slate-400 font-mono">
-          <p>
-            Page {pagination.page} of {pagination.totalPages} ({pagination.total} total log entries)
-          </p>
-          <div className="flex gap-1.5">
+      {/* Premium Pagination */}
+      {logs.length > 0 && (
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 p-3 bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-2xl shadow-sm">
+          <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+            Showing <span className="text-slate-900 dark:text-white font-bold">{((pagination.page - 1) * 15) + 1}</span> to <span className="text-slate-900 dark:text-white font-bold">{Math.min(pagination.page * 15, pagination.total)}</span> of <span className="text-slate-900 dark:text-white font-bold">{pagination.total}</span> logs
+          </div>
+          <div className="flex items-center gap-2">
             <button
               disabled={pagination.page <= 1}
-              onClick={() => fetchLogs(pagination.page - 1)}
-              className="btn-secondary !px-2.5 !py-1 text-xs disabled:opacity-40"
+              onClick={() => handlePageChange(pagination.page - 1)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.1] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              <ChevronLeft size={14} />
+              <ChevronLeft size={14} /> Prev
             </button>
+            
+            <div className="flex items-center px-3 py-1 text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg border border-indigo-100 dark:border-indigo-500/20">
+              {pagination.page} / {pagination.totalPages}
+            </div>
+
             <button
               disabled={pagination.page >= pagination.totalPages}
-              onClick={() => fetchLogs(pagination.page + 1)}
-              className="btn-secondary !px-2.5 !py-1 text-xs disabled:opacity-40"
+              onClick={() => handlePageChange(pagination.page + 1)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-white/[0.05] dark:hover:bg-white/[0.1] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              <ChevronRight size={14} />
+              Next <ChevronRight size={14} />
             </button>
           </div>
         </div>

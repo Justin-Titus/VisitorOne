@@ -4,7 +4,6 @@ import useAuth from '../../hooks/useAuth';
 import useTheme from '../../hooks/useTheme';
 import { motion } from 'framer-motion';
 import {
-  Shield,
   Mail,
   Lock,
   Eye,
@@ -14,7 +13,6 @@ import {
   ArrowRight,
   ShieldCheck,
   KeyRound,
-  CheckCircle2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 

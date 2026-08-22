@@ -1,4 +1,5 @@
 const ActivityLog = require('../models/ActivityLog.model');
+const { escapeRegex } = require('../utils/helpers');
 
 const logActivity = async (visitRequestId, action, performedBy, remarks = '') => {
   const log = new ActivityLog({
@@ -26,6 +27,22 @@ const getGlobalActivityLogs = async (filters, page = 1, limit = 10) => {
     query.timestamp = {};
     if (filters.from) query.timestamp.$gte = new Date(filters.from);
     if (filters.to) query.timestamp.$lte = new Date(filters.to);
+  }
+
+  if (filters.search) {
+    const User = require('../models/User.model');
+    const safeSearch = escapeRegex(filters.search);
+    const matchingUsers = await User.find({ name: { $regex: safeSearch, $options: 'i' } }).select('_id');
+    const userIds = matchingUsers.map(u => u._id);
+    
+    query.$or = [
+      { remarks: { $regex: safeSearch, $options: 'i' } },
+      { action: { $regex: safeSearch, $options: 'i' } }
+    ];
+    
+    if (userIds.length > 0) {
+      query.$or.push({ performedBy: { $in: userIds } });
+    }
   }
 
   const skip = (page - 1) * limit;

@@ -368,32 +368,32 @@
 }
 
 @utility stamp-approved {
-  color: #4f46e5;
-  border-color: #4f46e5;
-  background: rgba(99, 102, 241, 0.08);
-}
-
-.dark .stamp-approved {
-  color: #818cf8;
-  border-color: #818cf8;
-  background: rgba(99, 102, 241, 0.14);
-}
-
-@utility stamp-checked-in {
   color: #059669;
   border-color: #059669;
   background: rgba(16, 185, 129, 0.08);
 }
 
-.dark .stamp-checked-in {
+.dark .stamp-approved {
   color: #34d399;
   border-color: #34d399;
   background: rgba(16, 185, 129, 0.14);
 }
 
+@utility stamp-checked-in {
+  color: #0891b2;
+  border-color: #0891b2;
+  background: rgba(6, 182, 212, 0.08);
+}
+
+.dark .stamp-checked-in {
+  color: #22d3ee;
+  border-color: #22d3ee;
+  background: rgba(6, 182, 212, 0.14);
+}
+
 @utility stamp-checked-out {
-  color: #64748b;
-  border-color: #64748b;
+  color: #475569;
+  border-color: #475569;
   background: rgba(100, 116, 139, 0.08);
 }
 
@@ -419,6 +419,12 @@
   color: #6b7280;
   border-color: #6b7280;
   background: rgba(107, 114, 128, 0.08);
+}
+
+.dark .stamp-cancelled {
+  color: #9ca3af;
+  border-color: #9ca3af;
+  background: rgba(107, 114, 128, 0.14);
 }
 
 /* Linear Keycap Pill */
@@ -630,29 +636,29 @@ select.input-field option {
 }
 
 @utility badge-approved {
-  background: rgba(99, 102, 241, 0.12);
-  color: #4f46e5;
-  border: 1px solid rgba(99, 102, 241, 0.25);
-}
-
-.dark .badge-approved {
-  color: #a5b4fc;
-}
-
-@utility badge-checked-in {
   background: rgba(16, 185, 129, 0.12);
   color: #059669;
   border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
-.dark .badge-checked-in {
+.dark .badge-approved {
   color: #34d399;
 }
 
+@utility badge-checked-in {
+  background: rgba(6, 182, 212, 0.12);
+  color: #0891b2;
+  border: 1px solid rgba(6, 182, 212, 0.25);
+}
+
+.dark .badge-checked-in {
+  color: #22d3ee;
+}
+
 @utility badge-checked-out {
-  background: rgba(148, 163, 184, 0.12);
-  color: #64748b;
-  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(100, 116, 139, 0.12);
+  color: #475569;
+  border: 1px solid rgba(100, 116, 139, 0.25);
 }
 
 .dark .badge-checked-out {
@@ -671,7 +677,7 @@ select.input-field option {
 
 @utility badge-cancelled {
   background: rgba(107, 114, 128, 0.12);
-  color: #6b7280;
+  color: #4b5563;
   border: 1px solid rgba(107, 114, 128, 0.25);
 }
 

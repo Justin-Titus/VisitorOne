@@ -19,7 +19,7 @@ api.interceptors.response.use(
         window.location.href = '/login';
       }
     }
-    toast.error(message);
+    toast.error(message, { id: 'api-error-toast' });
     return Promise.reject(error);
   }
 );

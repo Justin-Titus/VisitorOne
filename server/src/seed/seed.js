@@ -13,7 +13,7 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('⚡ MongoDB Connected for Seeding');
+    console.log('⚡ MongoDB Connected for Rich Seeding');
   } catch (error) {
     console.error('MongoDB connection error:', error);
     process.exit(1);
@@ -31,7 +31,7 @@ const seedData = async () => {
 
     console.log('🧹 Cleared existing Database collections');
 
-    // 1. Create Core Users
+    // 1. Create Core Administrative & Gate Staff Users
     const adminUser = await User.create({
       name: 'Super Admin',
       email: 'admin@visitorone.com',
@@ -40,19 +40,19 @@ const seedData = async () => {
     });
 
     const receptionistUser = await User.create({
-      name: 'Front Desk',
+      name: 'Front Desk Receptionist',
       email: 'reception@visitorone.com',
       password: 'Reception@123',
       role: ROLES.RECEPTIONIST,
     });
 
-    // 2. Create Staff Employees
+    // 2. Create Staff Employees Across 5 Departments
     const employeesData = [
       {
         name: 'Alice Smith',
         employeeCode: 'EMP001',
         department: 'Engineering',
-        designation: 'Senior Architect',
+        designation: 'Senior Principal Architect',
         email: 'alice.smith@visitorone.com',
         phone: '9876543210',
         status: EMPLOYEE_STATUS.ACTIVE,
@@ -70,15 +70,60 @@ const seedData = async () => {
         name: 'Charlie Brown',
         employeeCode: 'EMP003',
         department: 'Operations',
-        designation: 'Operations Manager',
+        designation: 'VP of Operations',
         email: 'charlie.brown@visitorone.com',
         phone: '9876543212',
+        status: EMPLOYEE_STATUS.ACTIVE,
+      },
+      {
+        name: 'Diana Prince',
+        employeeCode: 'EMP004',
+        department: 'Marketing',
+        designation: 'Chief Marketing Officer',
+        email: 'diana.prince@visitorone.com',
+        phone: '9876543213',
+        status: EMPLOYEE_STATUS.ACTIVE,
+      },
+      {
+        name: 'Ethan Hunt',
+        employeeCode: 'EMP005',
+        department: 'Security & Facilities',
+        designation: 'Head of Physical Security',
+        email: 'ethan.hunt@visitorone.com',
+        phone: '9876543214',
+        status: EMPLOYEE_STATUS.ACTIVE,
+      },
+      {
+        name: 'Fiona Gallagher',
+        employeeCode: 'EMP006',
+        department: 'Finance',
+        designation: 'Financial Controller',
+        email: 'fiona.gallagher@visitorone.com',
+        phone: '9876543215',
+        status: EMPLOYEE_STATUS.ACTIVE,
+      },
+      {
+        name: 'George Clark',
+        employeeCode: 'EMP007',
+        department: 'Engineering',
+        designation: 'DevOps Lead',
+        email: 'george.clark@visitorone.com',
+        phone: '9876543216',
+        status: EMPLOYEE_STATUS.ACTIVE,
+      },
+      {
+        name: 'Hannah Abbott',
+        employeeCode: 'EMP008',
+        department: 'Legal',
+        designation: 'General Counsel',
+        email: 'hannah.abbott@visitorone.com',
+        phone: '9876543217',
         status: EMPLOYEE_STATUS.ACTIVE,
       },
     ];
 
     const createdEmployees = await Employee.insertMany(employeesData);
-    console.log('✅ Sample Staff Employees created');
+    console.log(`✅ ${createdEmployees.length} Staff Employees created across 6 departments`);
 
     // Create User accounts for Employees
     const empUsersMap = {};
@@ -93,250 +138,189 @@ const seedData = async () => {
       empUsersMap[employee.name] = { user: empUser, employee };
     }
 
-    // 3. Create Sample Visitors
+    // 3. Create Expanded Visitor Directory
     const visitorsData = [
-      {
-        name: 'John Doe',
-        phone: '9811122334',
-        email: 'john.doe@techcorp.io',
-        company: 'TechCorp Solutions',
-        idProofType: 'aadhar',
-        idProofNumber: '1234-5678-9012',
-      },
-      {
-        name: 'Sarah Connor',
-        phone: '9822233445',
-        email: 'sarah.c@cyberdyne.com',
-        company: 'Cyberdyne Systems',
-        idProofType: 'passport',
-        idProofNumber: 'A1234567',
-      },
-      {
-        name: 'David Miller',
-        phone: '9833344556',
-        email: 'david.m@acme.com',
-        company: 'Acme Industries',
-        idProofType: 'driving_license',
-        idProofNumber: 'DL-987654321',
-      },
-      {
-        name: 'Elena Rostova',
-        phone: '9844455667',
-        email: 'elena.r@globallogistics.com',
-        company: 'Global Logistics Corp',
-        idProofType: 'voter_id',
-        idProofNumber: 'VTR88776655',
-      },
-      {
-        name: 'Michael Vance',
-        phone: '9855566778',
-        email: 'michael.v@apex.org',
-        company: 'Apex Innovations',
-        idProofType: 'aadhar',
-        idProofNumber: '5566-7788-9900',
-      },
+      { name: 'John Doe', phone: '9811122334', email: 'john.doe@techcorp.io', company: 'TechCorp Solutions', idProofType: 'aadhar', idProofNumber: '1234-5678-9012' },
+      { name: 'Sarah Connor', phone: '9822233445', email: 'sarah.c@cyberdyne.com', company: 'Cyberdyne Systems', idProofType: 'passport', idProofNumber: 'A1234567' },
+      { name: 'David Miller', phone: '9833344556', email: 'david.m@acme.com', company: 'Acme Industries', idProofType: 'driving_license', idProofNumber: 'DL-987654321' },
+      { name: 'Elena Rostova', phone: '9844455667', email: 'elena.r@globallogistics.com', company: 'Global Logistics Corp', idProofType: 'voter_id', idProofNumber: 'VTR88776655' },
+      { name: 'Michael Vance', phone: '9855566778', email: 'michael.v@apex.org', company: 'Apex Innovations', idProofType: 'aadhar', idProofNumber: '5566-7788-9900' },
+      { name: 'Robert Langdon', phone: '9866677889', email: 'robert@symbology.edu', company: 'Harvard Research', idProofType: 'passport', idProofNumber: 'P9988776' },
+      { name: 'Clara Oswald', phone: '9877788990', email: 'clara@tardis.uk', company: 'Coal Hill Media', idProofType: 'driving_license', idProofNumber: 'DL-445566' },
+      { name: 'Victor Stone', phone: '9888899001', email: 'victor@star-labs.com', company: 'S.T.A.R. Labs', idProofType: 'aadhar', idProofNumber: '9900-1122-3344' },
+      { name: 'Arthur Dent', phone: '9899900112', email: 'arthur@hitchhiker.org', company: 'Sub-Etha Media', idProofType: 'voter_id', idProofNumber: 'VTR112233' },
+      { name: 'Bruce Wayne', phone: '9800011223', email: 'bruce@wayneenterprises.com', company: 'Wayne Enterprises', idProofType: 'passport', idProofNumber: 'BW-007007' },
+      { name: 'Peter Parker', phone: '9812345678', email: 'peter@dailybugle.com', company: 'Daily Bugle Press', idProofType: 'driving_license', idProofNumber: 'DL-778899' },
+      { name: 'Tony Stark', phone: '9823456789', email: 'tony@starkindustries.com', company: 'Stark Tech Global', idProofType: 'passport', idProofNumber: 'ST-100100' },
+      { name: 'Natasha Romanoff', phone: '9834567890', email: 'natasha@shield.gov', company: 'S.H.I.E.L.D. Agency', idProofType: 'passport', idProofNumber: 'SH-909090' },
+      { name: 'Clark Kent', phone: '9845678901', email: 'clark@metropolis.com', company: 'Daily Planet', idProofType: 'voter_id', idProofNumber: 'VTR554433' },
+      { name: 'Wanda Maximoff', phone: '9856789012', email: 'wanda@westview.io', company: 'Hex Media Labs', idProofType: 'aadhar', idProofNumber: '7766-5544-3322' },
     ];
 
     const createdVisitors = await Visitor.insertMany(visitorsData);
-    console.log('✅ Sample Visitors created');
+    console.log(`✅ ${createdVisitors.length} Sample Visitors created`);
 
-    // 4. Create Visit Requests with Various Statuses
-    const todayStr = new Date().toISOString().split('T')[0];
+    // 4. Create Historical & Current Visit Requests Across Past 10 Days
+    const requestsData = [];
+    const logsData = [];
 
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-    const requestsData = [
-      // 1) Pending Request -> Alice
-      {
-        visitor: createdVisitors[0]._id, // John Doe
-        employeeToVisit: empUsersMap['Alice Smith'].employee._id,
-        purpose: 'Technical Architecture Review',
-        visitDate: new Date(),
-        visitDateString: todayStr,
-        expectedArrivalTime: '14:30',
-        status: VISIT_STATUS.PENDING,
-        createdBy: receptionistUser._id,
-      },
-      // 2) Approved Request -> Bob
-      {
-        visitor: createdVisitors[1]._id, // Sarah Connor
-        employeeToVisit: empUsersMap['Bob Jones'].employee._id,
-        purpose: 'Executive Hiring Discussion',
-        visitDate: new Date(),
-        visitDateString: todayStr,
-        expectedArrivalTime: '11:00',
-        status: VISIT_STATUS.APPROVED,
-        createdBy: receptionistUser._id,
-        approvedBy: empUsersMap['Bob Jones'].user._id,
-        decidedAt: new Date(),
-        remarks: 'Cleared for VIP conference room access',
-      },
-      // 3) Checked In Request -> Charlie
-      {
-        visitor: createdVisitors[2]._id, // David Miller
-        employeeToVisit: empUsersMap['Charlie Brown'].employee._id,
-        purpose: 'Annual Facility Audit',
-        visitDate: new Date(),
-        visitDateString: todayStr,
-        expectedArrivalTime: '09:30',
-        status: VISIT_STATUS.CHECKED_IN,
-        createdBy: receptionistUser._id,
-        approvedBy: empUsersMap['Charlie Brown'].user._id,
-        decidedAt: new Date(Date.now() - 3600000 * 3),
-        checkInTime: new Date(Date.now() - 3600000 * 2),
-        remarks: 'Issued Zone 1 Security Badge',
-      },
-      // 4) Checked Out Request (Yesterday) -> Alice
-      {
-        visitor: createdVisitors[3]._id, // Elena Rostova
-        employeeToVisit: empUsersMap['Alice Smith'].employee._id,
-        purpose: 'Vendor Onboarding & Contract Signing',
-        visitDate: yesterday,
-        visitDateString: yesterdayStr,
-        expectedArrivalTime: '10:00',
-        status: VISIT_STATUS.CHECKED_OUT,
-        createdBy: receptionistUser._id,
-        approvedBy: empUsersMap['Alice Smith'].user._id,
-        decidedAt: new Date(yesterday.valueOf() + 3600000),
-        checkInTime: new Date(yesterday.valueOf() + 7200000),
-        checkOutTime: new Date(yesterday.valueOf() + 14400000),
-        remarks: 'Contract signed. Badge returned.',
-      },
-      // 5) Rejected Request -> Bob
-      {
-        visitor: createdVisitors[4]._id, // Michael Vance
-        employeeToVisit: empUsersMap['Bob Jones'].employee._id,
-        purpose: 'Unscheduled Sales Pitch',
-        visitDate: new Date(),
-        visitDateString: todayStr,
-        expectedArrivalTime: '16:00',
-        status: VISIT_STATUS.REJECTED,
-        createdBy: receptionistUser._id,
-        rejectedBy: empUsersMap['Bob Jones'].user._id,
-        decidedAt: new Date(),
-        remarks: 'Host employee unavailable today',
-      },
+    const purposes = [
+      'Technical Architecture Review',
+      'Executive Hiring Interview',
+      'Annual Facility Compliance Audit',
+      'Vendor Onboarding & Contract Signing',
+      'Strategic Partnership Discussion',
+      'Equipment Maintenance & Inspection',
+      'Financial Portfolio Review',
+      'Legal Consultation & Compliance',
+      'Media Press Conference Briefing',
+      'System Security & Access Evaluation',
     ];
 
-    const createdRequests = await VisitRequest.insertMany(requestsData);
-    console.log('✅ Sample Visit Requests created across all statuses');
+    const arrivalTimes = ['08:30', '09:00', '09:30', '10:00', '10:30', '11:15', '13:00', '14:00', '14:30', '15:15', '16:00', '17:00'];
+    const statuses = [VISIT_STATUS.CHECKED_OUT, VISIT_STATUS.CHECKED_IN, VISIT_STATUS.APPROVED, VISIT_STATUS.PENDING, VISIT_STATUS.REJECTED, VISIT_STATUS.CANCELLED];
 
-    // 5. Seed Activity Logs for Audit Trail
-    const logs = [];
+    const now = new Date();
 
-    // Log for Pending
-    logs.push({
-      visitRequest: createdRequests[0]._id,
-      action: ACTIVITY_ACTIONS.CREATED,
-      performedBy: receptionistUser._id,
-      remarks: 'Visitor registered at reception desk',
-      timestamp: createdRequests[0].createdAt,
-    });
+    // Generate requests for last 10 days up to today
+    for (let dayOffset = 10; dayOffset >= 0; dayOffset--) {
+      const vDate = new Date();
+      vDate.setDate(now.getDate() - dayOffset);
+      const vDateStr = vDate.toISOString().split('T')[0];
 
-    // Log for Approved
-    logs.push(
-      {
-        visitRequest: createdRequests[1]._id,
-        action: ACTIVITY_ACTIONS.CREATED,
-        performedBy: receptionistUser._id,
-        remarks: 'Visitor registered',
-        timestamp: new Date(Date.now() - 3600000 * 4),
-      },
-      {
-        visitRequest: createdRequests[1]._id,
-        action: ACTIVITY_ACTIONS.APPROVED,
-        performedBy: empUsersMap['Bob Jones'].user._id,
-        remarks: 'Approved by host employee',
-        timestamp: createdRequests[1].decidedAt,
+      // Number of visits per day (higher on weekdays)
+      const countForDay = dayOffset === 0 ? 6 : Math.floor(3 + Math.random() * 4);
+
+      for (let i = 0; i < countForDay; i++) {
+        const visitorIndex = (dayOffset * 3 + i) % createdVisitors.length;
+        const employeeObj = createdEmployees[(i + dayOffset) % createdEmployees.length];
+        const hostUser = empUsersMap[employeeObj.name].user;
+        const visitorObj = createdVisitors[visitorIndex];
+        const purpose = purposes[(i + dayOffset) % purposes.length];
+        const expectedTime = arrivalTimes[(i * 2 + dayOffset) % arrivalTimes.length];
+
+        let status;
+        if (dayOffset > 0) {
+          // Past dates are mostly completed, checked out, or rejected
+          const pastStatuses = [VISIT_STATUS.CHECKED_OUT, VISIT_STATUS.CHECKED_OUT, VISIT_STATUS.CHECKED_OUT, VISIT_STATUS.REJECTED, VISIT_STATUS.CANCELLED];
+          status = pastStatuses[(i + dayOffset) % pastStatuses.length];
+        } else {
+          // Today's date has active, approved, pending, and checked-out
+          const todayStatuses = [VISIT_STATUS.CHECKED_IN, VISIT_STATUS.APPROVED, VISIT_STATUS.PENDING, VISIT_STATUS.CHECKED_OUT, VISIT_STATUS.REJECTED];
+          status = todayStatuses[i % todayStatuses.length];
+        }
+
+        const createdAt = new Date(vDate.valueOf() - 3600000 * 24);
+
+        let checkInTime = null;
+        let checkOutTime = null;
+        let decidedAt = null;
+        let remarks = undefined;
+
+        if (status !== VISIT_STATUS.PENDING) {
+          decidedAt = new Date(vDate.valueOf() + 3600000 * 1);
+        }
+
+        if (status === VISIT_STATUS.CHECKED_IN || status === VISIT_STATUS.CHECKED_OUT) {
+          const [h, m] = expectedTime.split(':').map(Number);
+          checkInTime = new Date(vDate);
+          checkInTime.setHours(h, m, 0, 0);
+        }
+
+        if (status === VISIT_STATUS.CHECKED_OUT) {
+          const durationHours = 1 + (i % 3);
+          checkOutTime = new Date(checkInTime.valueOf() + 3600000 * durationHours);
+          remarks = 'Visit completed successfully. Visitor badge returned.';
+        } else if (status === VISIT_STATUS.REJECTED) {
+          remarks = 'Host employee had a scheduling conflict.';
+        } else if (status === VISIT_STATUS.APPROVED) {
+          remarks = 'Approved for conference room meeting.';
+        } else if (status === VISIT_STATUS.CHECKED_IN) {
+          remarks = 'Checked in at main entrance security desk.';
+        }
+
+        const visitReq = new VisitRequest({
+          visitor: visitorObj._id,
+          employeeToVisit: employeeObj._id,
+          purpose,
+          visitDate: vDate,
+          visitDateString: vDateStr,
+          expectedArrivalTime: expectedTime,
+          status,
+          createdBy: receptionistUser._id,
+          approvedBy: status === VISIT_STATUS.APPROVED || status === VISIT_STATUS.CHECKED_IN || status === VISIT_STATUS.CHECKED_OUT ? hostUser._id : undefined,
+          rejectedBy: status === VISIT_STATUS.REJECTED ? hostUser._id : undefined,
+          decidedAt,
+          checkInTime,
+          checkOutTime,
+          remarks,
+          createdAt,
+        });
+
+        const savedReq = await visitReq.save();
+
+        // Build Activity Logs
+        logsData.push({
+          visitRequest: savedReq._id,
+          action: ACTIVITY_ACTIONS.CREATED,
+          performedBy: receptionistUser._id,
+          remarks: 'Visitor pass created',
+          timestamp: createdAt,
+        });
+
+        if (status === VISIT_STATUS.APPROVED || status === VISIT_STATUS.CHECKED_IN || status === VISIT_STATUS.CHECKED_OUT) {
+          logsData.push({
+            visitRequest: savedReq._id,
+            action: ACTIVITY_ACTIONS.APPROVED,
+            performedBy: hostUser._id,
+            remarks: 'Pass approved by host employee',
+            timestamp: decidedAt,
+          });
+        }
+
+        if (status === VISIT_STATUS.REJECTED) {
+          logsData.push({
+            visitRequest: savedReq._id,
+            action: ACTIVITY_ACTIONS.REJECTED,
+            performedBy: hostUser._id,
+            remarks: remarks || 'Rejected',
+            timestamp: decidedAt,
+          });
+        }
+
+        if (status === VISIT_STATUS.CHECKED_IN || status === VISIT_STATUS.CHECKED_OUT) {
+          logsData.push({
+            visitRequest: savedReq._id,
+            action: ACTIVITY_ACTIONS.CHECKED_IN,
+            performedBy: receptionistUser._id,
+            remarks: 'Visitor checked in at front desk',
+            timestamp: checkInTime,
+          });
+        }
+
+        if (status === VISIT_STATUS.CHECKED_OUT) {
+          logsData.push({
+            visitRequest: savedReq._id,
+            action: ACTIVITY_ACTIONS.CHECKED_OUT,
+            performedBy: receptionistUser._id,
+            remarks: 'Visitor checked out',
+            timestamp: checkOutTime,
+          });
+        }
       }
-    );
+    }
 
-    // Log for Checked-In
-    logs.push(
-      {
-        visitRequest: createdRequests[2]._id,
-        action: ACTIVITY_ACTIONS.CREATED,
-        performedBy: receptionistUser._id,
-        remarks: 'Visitor registered',
-        timestamp: new Date(Date.now() - 3600000 * 5),
-      },
-      {
-        visitRequest: createdRequests[2]._id,
-        action: ACTIVITY_ACTIONS.APPROVED,
-        performedBy: empUsersMap['Charlie Brown'].user._id,
-        remarks: 'Approved by host',
-        timestamp: createdRequests[2].decidedAt,
-      },
-      {
-        visitRequest: createdRequests[2]._id,
-        action: ACTIVITY_ACTIONS.CHECKED_IN,
-        performedBy: receptionistUser._id,
-        remarks: 'Checked in at reception gate 1',
-        timestamp: createdRequests[2].checkInTime,
-      }
-    );
+    console.log(`✅ ${logsData.length / 2 | 0} Visit Requests & ${logsData.length} Activity Log Entries created!`);
 
-    // Log for Checked-Out
-    logs.push(
-      {
-        visitRequest: createdRequests[3]._id,
-        action: ACTIVITY_ACTIONS.CREATED,
-        performedBy: receptionistUser._id,
-        remarks: 'Visitor registered',
-        timestamp: yesterday,
-      },
-      {
-        visitRequest: createdRequests[3]._id,
-        action: ACTIVITY_ACTIONS.APPROVED,
-        performedBy: empUsersMap['Alice Smith'].user._id,
-        remarks: 'Approved',
-        timestamp: createdRequests[3].decidedAt,
-      },
-      {
-        visitRequest: createdRequests[3]._id,
-        action: ACTIVITY_ACTIONS.CHECKED_IN,
-        performedBy: receptionistUser._id,
-        remarks: 'Checked in',
-        timestamp: createdRequests[3].checkInTime,
-      },
-      {
-        visitRequest: createdRequests[3]._id,
-        action: ACTIVITY_ACTIONS.CHECKED_OUT,
-        performedBy: receptionistUser._id,
-        remarks: 'Checked out & badge returned',
-        timestamp: createdRequests[3].checkOutTime,
-      }
-    );
+    await ActivityLog.insertMany(logsData);
+    console.log('✅ Audit Trail Logs populated successfully!');
 
-    // Log for Rejected
-    logs.push(
-      {
-        visitRequest: createdRequests[4]._id,
-        action: ACTIVITY_ACTIONS.CREATED,
-        performedBy: receptionistUser._id,
-        remarks: 'Visitor registered',
-        timestamp: new Date(Date.now() - 1800000),
-      },
-      {
-        visitRequest: createdRequests[4]._id,
-        action: ACTIVITY_ACTIONS.REJECTED,
-        performedBy: empUsersMap['Bob Jones'].user._id,
-        remarks: 'Host employee unavailable today',
-        timestamp: createdRequests[4].decidedAt,
-      }
-    );
-
-    await ActivityLog.insertMany(logs);
-    console.log('✅ Sample Security Audit Trail Activity Logs created');
-
-    console.log('\n🚀 SEEDING COMPLETED SUCCESSFULLY!');
+    console.log('\n🚀 RICH SEEDING COMPLETED SUCCESSFULLY!');
     console.log('----------------------------------------------------');
-    console.log('🔐 Quick Credentials:');
+    console.log('🔐 Access Quick Credentials:');
     console.log('  - Admin:        admin@visitorone.com        / Admin@123');
     console.log('  - Receptionist: reception@visitorone.com    / Reception@123');
-    console.log('  - Alice (Dev):  alice.smith@visitorone.com  / Employee@123');
+    console.log('  - Alice (Eng):  alice.smith@visitorone.com  / Employee@123');
     console.log('  - Bob (HR):     bob.jones@visitorone.com    / Employee@123');
     console.log('  - Charlie (Ops):charlie.brown@visitorone.com / Employee@123');
     console.log('----------------------------------------------------');

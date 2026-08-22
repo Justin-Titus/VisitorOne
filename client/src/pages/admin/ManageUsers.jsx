@@ -6,8 +6,9 @@ import EmptyState from '../../components/ui/EmptyState';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
-import { Plus, Edit, ToggleLeft, ToggleRight, UserCog, Search, Shield, ShieldCheck } from 'lucide-react';
+import { Plus, Edit, ToggleLeft, ToggleRight, UserCog, Search, Shield } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
+import useDebounce from '../../hooks/useDebounce';
 
 const ROLES = ['admin', 'receptionist', 'employee'];
 
@@ -26,6 +27,7 @@ export default function ManageUsers() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editUser, setEditUser] = useState(null);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
   const [roleFilter, setRoleFilter] = useState('all');
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
@@ -123,8 +125,8 @@ export default function ManageUsers() {
 
   const filtered = users.filter((u) => {
     const matchesSearch =
-      u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase());
+      u.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      u.email.toLowerCase().includes(debouncedSearch.toLowerCase());
     const matchesRole = roleFilter === 'all' || u.role === roleFilter;
     return matchesSearch && matchesRole;
   });

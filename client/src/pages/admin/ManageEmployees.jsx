@@ -17,8 +17,8 @@ import {
   Phone,
   Mail,
   Hash,
-  ShieldCheck,
 } from 'lucide-react';
+import useDebounce from '../../hooks/useDebounce';
 
 const statusTabs = [
   { id: 'all', label: 'All Staff' },
@@ -32,6 +32,7 @@ export default function ManageEmployees() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editEmployee, setEditEmployee] = useState(null);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
   const [statusFilter, setStatusFilter] = useState('all');
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
@@ -123,9 +124,9 @@ export default function ManageEmployees() {
 
   const filtered = employees.filter((e) => {
     const matchesSearch =
-      e.name.toLowerCase().includes(search.toLowerCase()) ||
-      e.department.toLowerCase().includes(search.toLowerCase()) ||
-      e.employeeCode.toLowerCase().includes(search.toLowerCase());
+      e.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      e.department.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      e.employeeCode.toLowerCase().includes(debouncedSearch.toLowerCase());
     const matchesStatus = statusFilter === 'all' || e.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
