@@ -1,6 +1,6 @@
 # VisitorOne — Visitor Pass Management System (MERN Stack)
 
-An enterprise-grade, full-stack **Visitor Pass Management System** built with **MongoDB**, **Express.js**, **React.js**, and **Node.js**.
+An enterprise-grade, full-stack **Visitor Pass Management System** built with **MongoDB**, **Express.js**, **React.js**, and **Node.js**, written in **TypeScript**.
 
 Designed with sleek dark-mode aesthetics, responsive glassmorphism interfaces, role-based security access controls, real-time activity audit logging, interactive analytics reports, and strict business logic validation.
 
@@ -8,8 +8,8 @@ Designed with sleek dark-mode aesthetics, responsive glassmorphism interfaces, r
 
 ## 🚀 Technology Stack
 
-- **Frontend**: React 19 (Vite), React Router v7, Framer Motion, TailwindCSS v4, Lucide Icons, React Hot Toast
-- **Backend**: Node.js, Express.js, Mongoose ODM
+- **Frontend**: React 19 (Vite), TypeScript, React Router v7, Framer Motion, TailwindCSS v4, Lucide Icons, React Hot Toast
+- **Backend**: Node.js, Express.js, TypeScript, Mongoose ODM
 - **Database**: MongoDB (Local or MongoDB Atlas)
 - **Security & Authentication**: JWT (JSON Web Tokens), Bcrypt.js, Helmet security headers, CORS protection, `express-mongo-sanitize` (NoSQL Injection Protection), `xss-clean` (XSS Protection), ReDoS Safe Search Escaping
 - **Deployment**: Vercel (Frontend) & Render (Backend REST API)
@@ -20,7 +20,7 @@ Designed with sleek dark-mode aesthetics, responsive glassmorphism interfaces, r
 
 ### 1. Administrator (`admin`)
 - Overall Command Dashboard with real-time facility telemetry & KPIs
-- Manage Employee Directory (Create, Edit, Activate/Deactivate, Delete)
+- Manage Employee Directory (Create, Edit, Activate/Deactivate)
 - Manage User Accounts & Role Permissions
 - View Visitor Analytics & Department Breakdown Reports
 - Access System-wide Immutable Audit Activity Logs
