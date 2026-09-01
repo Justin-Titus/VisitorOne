@@ -27,6 +27,15 @@ if (env.nodeEnv === 'development') {
   app.use(morgan('dev'));
 }
 
+// Root Health Check Route
+app.get('/', (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'VisitorOne API is running perfectly!',
+    version: '1.0.0'
+  });
+});
+
 // API Routes
 app.use('/api', routes);
 
